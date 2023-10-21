@@ -1,0 +1,232 @@
+
+<!-- saved from url=(0069)https://s.brightspace.com/lib/eus-widget/1.13.4/forethoughtframe.html -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>CHAT PAGE</title>
+    <!--    <meta name="viewport" content="width=device-width, initial-scale=1,
+    imum-scale=1, maximum-scale=1, user-scalable=0"> -->
+  <link href="./esw.min.css" type="text/css" rel="stylesheet"><style id="inert-style">
+[inert] {
+	pointer-events: none;
+	cursor: default;
+}
+
+[inert], [inert] * {
+	user-select: none;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+}
+</style></head>
+
+  <body data-new-gr-c-s-check-loaded="14.1107.0" data-gr-ext-installed="">
+    <!-- Salesforce script, configuration, and callbacks -->
+    <script type="text/javascript" src="./esw.js"></script>
+    <script type="text/javascript">
+      // On page load set the correct size of the iframe to account for either CWAE/Contact Us or Session Continuity.
+      function helpButtonLoaded() {
+        var helpButton = document.querySelector('.helpButton');
+		
+        if (!helpButton) {
+          window.setTimeout(helpButtonLoaded, 500);
+          return;
+        }
+        var height = helpButton.clientHeight;
+        var width = helpButton.clientWidth;
+        window.parent.postMessage(
+          {
+            frameHeight: height,
+            frameWidth: width,
+          },
+          '*'
+        ); // Used a * but for security reasons you can plug in the domain name.
+      }
+      window.onload = helpButtonLoaded();
+
+      window.addEventListener('message', (e) => {
+        if (e.data.event === 'd2lIframeLoaded') {
+          const { windowData } = e.data;
+          var initESW = function (gslbBaseURL) {
+            embedded_svc.settings.displayHelpButton = false; // Or false
+            embedded_svc.settings.language = ''; // For example, enter 'en' or 'en-US'
+            // Have set the widget height and width as a property on the object
+            embedded_svc.settings.widgetWidth = 320;
+            embedded_svc.settings.widgetHeight = 500;
+            embedded_svc.settings.enabledFeatures = ['LiveAgent'];
+            embedded_svc.settings.entryFeature = 'LiveAgent';
+			embedded_svc.settings.storageDomain = 'brightspace.com';
+            embedded_svc.init(
+              windowData['data-SalesForceDomain'],
+              windowData['data-CommunityChannelSearchURL'],
+              gslbBaseURL,
+              windowData['data-gslbBaseURL'],
+              windowData['data-EUSClientName'],
+              {
+                baseLiveAgentContentURL: windowData['data-BaseliveAgentContentURL'],
+                deploymentId: windowData['data-EUSDeploymentID'],
+                buttonId: windowData['data-EUSButtonID'],
+                baseLiveAgentURL: windowData['data-BaseLiveAgentURL'],
+                eswLiveAgentDevName: windowData['data-EUSLiveAgentDevName'],
+                isOfflineSupportEnabled: false,
+              }
+            );
+
+            embedded_svc.addEventHandler('afterMinimize', function () {
+              // hide salesforce button
+              const sfHelpButton = document.querySelector('.helpButton');
+              sfHelpButton.setAttribute('style', 'display: none !important');
+
+              window.parent.postMessage({ event: 'salesforceWidgetMinimized' }, '*')
+
+              var sidebar = document.querySelector('.embeddedServiceSidebarMinimizedDefaultUI');
+              var height = sidebar.clientHeight;
+              var width = sidebar.clientWidth;
+              window.parent.postMessage(
+                {
+                  frameHeight: height,
+                  frameWidth: width,
+                },
+                '*'
+              );
+            });
+
+            embedded_svc.addEventHandler('afterMaximize', function () {
+              // hide salesforce button
+              const sfHelpButton = document.querySelector('.helpButton');
+              if (sfHelpButton) {
+                sfHelpButton.setAttribute('style', 'display: none !important');
+              }
+
+              //adjust salesforce widget height
+              const sfWidget = document.querySelector('.dockableContainer');
+              if (sfWidget) {
+                const sfWidgetMaximizedStyles = `
+                right: 0px;
+                height: 498px;
+                min-width: 320px;
+                width: 100%;
+                font-size: 16px;
+              `;
+                sfWidget.setAttribute('style', sfWidgetMaximizedStyles);
+              }
+
+              window.parent.postMessage({ event: 'salesforceWidgetMaximized' }, '*')
+
+              var container = document.querySelector('.dockableContainer');
+              var height = container.clientHeight;
+              var width = container.clientWidth;
+              window.parent.postMessage(
+                {
+                  frameHeight: embedded_svc.settings.widgetHeight,
+                  frameWidth: embedded_svc.settings.widgetWidth,
+                },
+                '*'
+              );
+            });
+
+            embedded_svc.addEventHandler('afterDestroy', function () {
+              window.parent.postMessage({ event: 'salesforceWidgetDestroyed' }, '*')
+
+              var height = document.querySelector('.helpButton').clientHeight;
+              var width = document.querySelector('.helpButton').clientWidth;
+              window.parent.postMessage(
+                {
+                  frameHeight: height,
+                  frameWidth: width,
+                },
+                '*'
+              );
+            });
+          };
+
+          if (!window.embedded_svc) {
+            var s = document.createElement('script');
+            s.setAttribute('src', 'https://d2l.my.salesforce.com/embeddedservice/5.0/esw.min.js');
+            s.onload = function () {
+              initESW(null);
+            };
+            document.body.appendChild(s);
+          } else {
+            initESW('https://service.force.com');
+          }
+        }
+      })
+    </script>
+
+    <!-- Forethought script and listeners -->
+    <!-- access window variables using window.top.FirstName -->
+    <script type="text/javascript">
+      window.addEventListener('message', (e) => {
+        if (e.data.event === 'd2lIframeLoaded') {
+          const { windowData } = e.data;
+          const forethoughtscript = document.createElement('script');
+          forethoughtscript.setAttribute('id', 'forethoughtscript');
+          forethoughtscript.setAttribute('src', 'https://solve-widget.forethought.ai/embed.js');
+          forethoughtscript.setAttribute('type', 'application/javascript');
+          forethoughtscript.setAttribute('data-api-key', windowData['data-ApiKey']);
+          forethoughtscript.setAttribute('data-ft-user_type', windowData['data-CurrentLISRoles']);
+          forethoughtscript.setAttribute('data-ft-user_id', windowData['data-OrgDefinedId']);
+          forethoughtscript.setAttribute('data-ft-schoolurl', windowData['data-SchoolUrl']);
+          forethoughtscript.setAttribute('data-ft-user_first_name', windowData['data-FirstName']);
+          forethoughtscript.setAttribute('data-ft-user_last_name', windowData['data-LastName']);
+          forethoughtscript.setAttribute('data-ft-user_name', windowData['data-FirstName'] + ' ' + windowData['data-LastName']);
+          forethoughtscript.setAttribute('data-ft-user_email', windowData['data-Email']);
+          forethoughtscript.setAttribute('data-ft-current_url', windowData['data-href']);
+          forethoughtscript.setAttribute('data-ft-language', windowData['data-language']);
+          document.body.appendChild(forethoughtscript);
+        }
+      })
+	  
+	  window.addEventListener('message', (e) => {
+		const { event, method } = e.data;
+		var eventname = event || method
+		if (eventname === 'forethoughtWidgetLoaded'){
+			const resizeObserver = new ResizeObserver(entries => 
+				window.parent.postMessage( {event: 'Resize',ftHeight: entries[0].target.offsetHeight, ftWidth: entries[0].target.offsetWidth},'*')
+			)
+			var ftHelpButton = document.querySelector('#forethought-chat');
+			if ( ftHelpButton ) {
+				resizeObserver.observe( ftHelpButton );
+			}
+			
+		} else {
+				var obj = JSON.parse(JSON.stringify(e.data));
+				window.parent.postMessage(obj, '*')
+			}
+	  });
+
+    </script>
+  
+
+<script id="common-script" type="text/javascript" src="./common.min.js"></script><script id="forethoughtscript" src="./embed.js" type="application/javascript" data-api-key="35622c3a-8168-4a60-b8eb-1c2b90f6e4c1" data-ft-user_type="Student" data-ft-user_id="T00311941" data-ft-schoolurl="elearn.tntech.edu" data-ft-user_first_name="Markow" data-ft-user_last_name="Moussa" data-ft-user_name="Markow Moussa" data-ft-user_email="mrmoussa42@tntech.edu" data-ft-current_url="https://elearn.tntech.edu/d2l/lms/quizzing/user/attempt/quiz_start_frame_auto.d2l?ou=9281379&amp;isprv=&amp;drc=0&amp;qi=10279036&amp;cfql=0&amp;dnb=0&amp;fromQB=0&amp;inProgress=0" data-ft-language="en-us"></script><script id="liveagent-esw-script" type="text/javascript" src="./liveagent.esw.min.js"></script><form id="fileUploadForm" enctype="multipart/form-data" method="post" target="fileUploadIframe"><input type="file" id="fileSelector" name="file" style="display: none;"><input name="filename" type="hidden"></form><iframe id="fileUploadIframe" name="fileUploadIframe" title="FileUploadFrame" style="display: none;" src="./saved_resource.html"></iframe><iframe id="esw_storage_iframe" src="./esw.html" title="Live Chat Metadata" style="display: none;"></iframe><iframe id="forethought-chat" title="Virtual Assistant Chat" allowfullscreen="allowfullscreen" mozallowfullscreen="mozallowfullscreen" msallowfullscreen="msallowfullscreen" oallowfullscreen="oallowfullscreen" webkitallowfullscreen="webkitallowfullscreen" sandbox="allow-scripts allow-popups allow-top-navigation-by-user-activation allow-same-origin allow-popups-to-escape-sandbox allow-downloads allow-top-navigation" src="./saved_resource(1).html" style="
+    border:none;
+    overflow:hidden;
+    position:fixed;
+    z-index:999999;
+    -webkit-mask-image: -webkit-radial-gradient(white, black);
+
+
+    width:126px;
+    right: 0;
+    height: 67px;
+    bottom: 0
+  "></iframe><script type="text/javascript" src="./EmbeddedServiceConfig.jsonp"></script><script id="invite-esw-script" type="text/javascript" src="./invite.esw.min.js"></script><div class="embeddedServiceHelpButton" style="display: none;"><div class="helpButton"><button class="uiButton helpButtonEnabled" href="javascript:void(0)"><span class="embeddedServiceIcon" aria-hidden="true" data-icon="" style="display: inline-block;"></span><span class="helpButtonLabel" id="helpButtonSpan" aria-live="polite" aria-atomic="true"><span class="assistiveText">Live chat:</span><span class="message">Chat with an Expert</span></span></button></div></div><script id="inert-script" type="text/javascript" src="./inert.min.js"></script><script type="text/javascript" src="./EmbeddedServiceConfig(1).jsonp"></script><style id="ft-salesforce-style">.embeddedServiceHelpButton { display: none !important;}</style><style id="ft-kustomer-style">#kustomer-ui-sdk-iframe { display: none !important;}</style><style id="ft-intercom-style"></style><style id="ft-snapengage-style">#designstudio-button { display: none !important;}</style><style id="ft-brand-embassy-style">#be-frame {display: none !important;}</style><style id="ft-gorgias-style">#gorgias-chat-container {display: none !important;}</style></body><grammarly-desktop-integration data-grammarly-shadow-root="true"><template shadowrootmode="open"><style>
+  div.grammarly-desktop-integration {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select:none;
+    user-select:none;
+  }
+
+  div.grammarly-desktop-integration:before {
+    content: attr(data-content);
+  }
+</style><div aria-label="grammarly-integration" role="group" tabindex="-1" class="grammarly-desktop-integration" data-content="{&quot;mode&quot;:&quot;full&quot;,&quot;isActive&quot;:true,&quot;isUserDisabled&quot;:false}"></div></template></grammarly-desktop-integration></html>
